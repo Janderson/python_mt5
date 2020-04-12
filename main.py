@@ -1,4 +1,5 @@
 from core.symbol_tf import SymbolTF
+from commands.export_bars import ExportBars
 from market_data.mt5.mt5_converter import MT5Converter
 from market_data.mt5.mt5_connection import MT5Connection
 from time import sleep
@@ -25,32 +26,15 @@ def export_data_to_csv():
 @cli.command('export_bars')
 @click.option('--bars', default=500, help='Number of Bars to download.')
 @click.option('--qtd_loop', default=1, help='The person to greet.')
-@click.option('--time_frame', default="D1", help='TimeFrame to export.')
-def export_bars(bars, qtd_loop, time_frame):
-    stocks = ["WIN$N", "BOVA11", "FESA4", "OIBR3", "PETR4"]
-    data={}
-    for i in range(qtd_loop):
-        with MT5Connection() as mt5_connection:
-            #print(mt5.version())
-            mt5 = MT5Converter(mt5_connection)
-            for stock in stocks:
-                print ("exporting bars of {}-->".format(stock))
-                try:
-                    print("");#mt5_connection.get_ticks(stock, (datetime.today() - timedelta(hours=1)), 100))
-                except Exception as e:
-                    print("error e: {}".format(e))
-                    import traceback
-                    traceback.print_exc()
-                try:
-                    bars_df = mt5.get_bars_to_df(SymbolTF(stock, time_frame), qtd=bars)
-                except Exception as e:
-                    print("error e: {}".format(e))
-                    import traceback
-                    traceback.print_exc()
-                #import ipdb; ipdb.set_trace()
-                bars_df.to_csv("data/{}_{}.csv".format(stock, time_frame))
-            if qtd_loop>1 or qtd_loop!=0:
-                sleep(5)
+@click.option('timeframes', '--timeframe', default=["D1"], multiple=True, help='TimeFrame to export.')
+@click.option('tickers', '--ticker', default=["PETR4"], multiple=True, help='Stocks to export.')
+def export_bars(bars, qtd_loop, timeframes, tickers):
+    with MT5Connection() as mt5_connection:
+        exportbars_cmd = ExportBars(MT5Converter(mt5_connection))
+        exportbars_cmd.parameters(tickers = list(tickers), 
+                                  timeframes = list(timeframes), bars=bars)
+        print(exportbars_cmd._tickers, exportbars_cmd._timeframes)
+        exportbars_cmd.run()
 
 @cli.command('monitor_ticks')
 def monitor_ticks():
