@@ -16,7 +16,7 @@ class MT5Connection:
         # connect to MetaTrader 5
         return mt5.initialize()
         # wait till MetaTrader 5 establishes connection to the trade server and synchronizes the environment
-        #MT5WaitForTerminal()
+        # mt5.MT5WaitForTerminal()
 
     def __enter__(self):
         self.open()
@@ -48,11 +48,10 @@ class MT5Connection:
 
     def get_bars(self, symbol, timeframe, start_index=0, qtd=10):
         return mt5.copy_rates_from_pos(symbol, self.str_timeframe_to_mt5(timeframe), start_index, qtd)
-    
-    def get_ticks(self, symbol, start_date, qtd):
-        ticks = mt5.copy_ticks_from(symbol, start_date, qtd, COPY_TICKS_ALL)        
-        return ticks
 
+    def get_ticks(self, symbol, start_date, qtd):
+        ticks = mt5.copy_ticks_from(symbol, start_date, qtd, mt5.COPY_TICKS_ALL)
+        return ticks
 
     def str_timeframe_to_mt5(self, tf_str):
         if tf_str == "D1":
