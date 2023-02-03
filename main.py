@@ -28,15 +28,15 @@ def export_data_to_csv():
 
 @cli.command('export_bars')
 @click.option('--bars', default=500, help='Number of Bars to download.')
-@click.option('--qtd_loop', default=1, help='The person to greet.')
-@click.option('timeframes', '--timeframe', default=["D1"], multiple=True, help='TimeFrame to export.')
-@click.option('tickers', '--ticker', default=["PETR4"], multiple=True, help='Stocks to export.')
-def export_bars(bars, qtd_loop, timeframes, tickers):
+@click.option('timeframes', '--timeframes', default="D1", help='TimeFrame to export.')
+@click.option('tickers', '--tickers', default="PETR4",  help='Stocks to export.')
+def export_bars(bars, timeframes, tickers):
+    timeframes = timeframes.split(",")
+    tickers = tickers.split(",")
     with MT5Connection() as mt5_connection:
         exportbars_cmd = ExportBars(MT5Converter(mt5_connection))
         exportbars_cmd.parameters(tickers = list(tickers), 
                                   timeframes = list(timeframes), bars=bars)
-        print(exportbars_cmd._tickers, exportbars_cmd._timeframes)
         exportbars_cmd.run()
 
 
