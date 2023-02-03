@@ -22,7 +22,7 @@ class ExportBars(Command):
 
     def run(self):
         for ticker, timeframe in product(self._tickers, self._timeframes):
-            print("exporting {} bars of {}_{}-->".format(self._bars, ticker, timeframe))
+            print(f"exportando {ticker}-{timeframe} ({self._bars} bars)".format(self._bars, ticker, timeframe))
             try:
                 bars_df = self._connection.get_bars_to_df(
                     SymbolTF(ticker, timeframe), qtd=self._bars)
